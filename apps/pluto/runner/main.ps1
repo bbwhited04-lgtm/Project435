@@ -24,6 +24,38 @@ $AuditDir = $PolicyJson.logging.audit_path
 if (-not $AuditDir) { throw "Policy missing logging.audit_path in $PolicyPath" }
 
 
+function Get-Sha256String($text) {
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes($text)
+  ($sha.ComputeHash($bytes) | ForEach-Object { $_.ToString("x2") }) -join ""
+}
+
+function Require-ApprovalReceipt($task, $taskJsonText, $repoRoot) {
+  if ($task.requires_approval -ne $true) { return }
+
+  $taskId = $task.id
+  if (-not $taskId) { throw "Task missing id; cannot verify approval receipt." }
+
+  $receiptPath = Join-Path $repoRoot ("tasks\approvals\approval_{0}.json" -f $taskId)
+  if (-not (Test-Path $receiptPath)) {
+    throw "Approval receipt missing: $receiptPath"
+  }
+
+  $receipt = Get-Content $receiptPath -Raw | ConvertFrom-Json
+
+  $taskHash = Get-Sha256String $taskJsonText
+  if ($receipt.task_hash_sha256 -ne $taskHash) {
+    throw "Approval receipt hash mismatch. Receipt=$($receipt.task_hash_sha256) Task=$taskHash"
+  }
+
+  # Optional expiry enforcement
+  if ($receipt.expires_at_utc) {
+    $exp = [DateTime]::Parse($receipt.expires_at_utc).ToUniversalTime()
+    if ([DateTime]::UtcNow -gt $exp) {
+      throw "Approval receipt expired at $($receipt.expires_at_utc)"
+    }
+  }
+}
 
 
 $AuditWriter = Join-Path $RepoRoot "core\tools\powershell\Write-AuditEvent.ps1"

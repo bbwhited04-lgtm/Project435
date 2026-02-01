@@ -9,13 +9,12 @@
     "override_allowed": false
   },
 
-  "filesystem": {
-    "sandbox_root": "C:\\Neptune\\Workspace",
-    "read_allowlist": ["C:\\Neptune\\Workspace"],
-    "write_allowlist": ["C:\\Neptune\\Workspace"],
-    "deny_paths": ["C:\\Windows", "C:\\Program Files", "C:\\Program Files (x86)"]
-  },
-
+ "filesystem": {
+  "sandbox_root": "F:\\project435\\_runtime\\workspace",
+  "read_allowlist": ["F:\\project435\\_runtime\\workspace"],
+  "write_allowlist": ["F:\\project435\\_runtime\\workspace"],
+  "deny_paths": ["C:\\Windows", "C:\\Program Files", "C:\\Program Files (x86)"]
+},
   "internet": {
     "allow_user_open_url": true,
     "allow_api_calls": true,
@@ -32,8 +31,8 @@
     "verify_signature": true
   },
 
-  "logging": {
-    "audit_enabled": true,
-    "audit_path": "C:\\Neptune\\Logs"
-  }
+ "logging": {
+  "audit_enabled": true,
+  "audit_path": "F:\\project435\\_runtime\\logs"
 }
+

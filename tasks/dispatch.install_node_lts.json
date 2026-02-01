@@ -1,0 +1,15 @@
+{
+  "id": "task-install-node-lts-001",
+  "created_at": "2026-02-01T00:00:00Z",
+  "requested_by": "user",
+  "type": "install_app",
+  "risk": "medium",
+  "requires_approval": true,
+  "payload": {
+    "winget_id": "OpenJS.NodeJS.LTS"
+  },
+  "constraints": {
+    "installer": "winget",
+    "admin_required": false
+  }
+}

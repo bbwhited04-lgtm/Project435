@@ -1,0 +1,25 @@
+{
+  "apps": [
+    {
+      "name": "Docker Desktop",
+      "id": "Docker.DockerDesktop",
+      "source": "winget",
+      "publisher_expected": "Docker Inc",
+      "auto_install_allowed": false
+    },
+    {
+      "name": "Python",
+      "id": "Python.Python.3.11",
+      "source": "winget",
+      "publisher_expected": "Python Software Foundation",
+      "auto_install_allowed": false
+    },
+    {
+      "name": "Node.js LTS",
+      "id": "OpenJS.NodeJS.LTS",
+      "source": "winget",
+      "publisher_expected": "OpenJS Foundation",
+      "auto_install_allowed": false
+    }
+  ]
+}

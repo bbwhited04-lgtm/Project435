@@ -3,11 +3,13 @@ param(
   [string]$TaskJsonPath
 )
 
-# Auto-detect repo root from this script location:
-# ...\apps\pluto\runner -> up 3 levels -> repo root of this worktree
-$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
-# Repo root auto-detect
-$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+# Resolve PROJECT435_ROOT (preferred)
+$RepoRoot = $env:PROJECT435_ROOT
+
+# Fallback: derive from script location (worktree-safe)
+if (-not $RepoRoot) {
+  $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+}
 
 # Read audit path from shared policy
 $PolicyPath = Join-Path $RepoRoot "core\policy\policy.default.json"

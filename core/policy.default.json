@@ -1,0 +1,39 @@
+{
+  "policy_version": "0.1",
+  "mode": "safe",
+  "no_scraping": true,
+
+  "content_filtering": {
+    "block_adult": true,
+    "block_explicit_sexual_generation": true,
+    "override_allowed": false
+  },
+
+  "filesystem": {
+    "sandbox_root": "C:\\Neptune\\Workspace",
+    "read_allowlist": ["C:\\Neptune\\Workspace"],
+    "write_allowlist": ["C:\\Neptune\\Workspace"],
+    "deny_paths": ["C:\\Windows", "C:\\Program Files", "C:\\Program Files (x86)"]
+  },
+
+  "internet": {
+    "allow_user_open_url": true,
+    "allow_api_calls": true,
+    "allow_rss": true,
+    "allow_webhooks": true,
+    "allow_html_extraction": false
+  },
+
+  "software": {
+    "install_mode": "approved_only",
+    "allow_auto_install": false,
+    "require_user_approval_for_admin": true,
+    "approved_installers": ["winget"],
+    "verify_signature": true
+  },
+
+  "logging": {
+    "audit_enabled": true,
+    "audit_path": "C:\\Neptune\\Logs"
+  }
+}

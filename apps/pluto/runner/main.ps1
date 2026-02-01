@@ -14,7 +14,16 @@ if (-not $RepoRoot) {
 # Read audit path from shared policy
 $PolicyPath = Join-Path $RepoRoot "core\policy\policy.default.json"
 $PolicyJson = Get-Content $PolicyPath -Raw | ConvertFrom-Json
-$AuditDir   = $PolicyJson.logging.audit_path
+try {
+  $PolicyJson = Get-Content $PolicyPath -Raw | ConvertFrom-Json
+} catch {
+  throw "Policy JSON invalid at: $PolicyPath. Fix JSON formatting. Error: $($_.Exception.Message)"
+}
+
+$AuditDir = $PolicyJson.logging.audit_path
+if (-not $AuditDir) { throw "Policy missing logging.audit_path in $PolicyPath" }
+
+
 
 
 $AuditWriter = Join-Path $RepoRoot "core\tools\powershell\Write-AuditEvent.ps1"

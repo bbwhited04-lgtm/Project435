@@ -1,20 +1,10 @@
-# Python
 .venv/
 __pycache__/
 *.pyc
-
-# Node
 node_modules/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Local-only / temp
-pluto_backup/
 .env
 .env.*
+pluto_backup/
 *.log
-
-# Docker
-docker-data/
+Thumbs.db
+.DS_Store

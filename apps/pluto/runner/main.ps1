@@ -3,7 +3,9 @@ param(
   [string]$TaskJsonPath
 )
 
-$RepoRoot = "F:\Project 435"  # keep simple for now; we can auto-detect later
+# Auto-detect repo root from this script location:
+# ...\apps\pluto\runner -> up 3 levels -> repo root of this worktree
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
 $AuditDir = "C:\Neptune\Logs"
 
 $AuditWriter = Join-Path $RepoRoot "core\tools\powershell\Write-AuditEvent.ps1"

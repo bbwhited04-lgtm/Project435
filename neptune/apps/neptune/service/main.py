@@ -1,10 +1,36 @@
 import json
 import os
 import time
+import hashlib
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
-
 from core.tools.python.policy import Policy
+
+def sha256_text(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+def now_utc() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+def write_approval_receipt(root: Path, task: dict, task_json_text: str, method: str) -> Path:
+    approvals_dir = root / "tasks" / "approvals"
+    approvals_dir.mkdir(parents=True, exist_ok=True)
+
+    task_id = task["id"]
+    receipt = {
+        "task_id": task_id,
+        "task_hash_sha256": sha256_text(task_json_text),
+        "approved_at_utc": now_utc(),
+        "approved_by": os.getenv("USERNAME", "local_operator"),
+        "approval_method": method,
+        # optional time-box to reduce risk/liability (Pluto can enforce)
+        "expires_at_utc": (datetime.now(timezone.utc) + timedelta(minutes=60)).isoformat()
+    }
+
+    receipt_path = approvals_dir / f"approval_{task_id}.json"
+    receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    return receipt_path
 
 def repo_root() -> Path:
     env_root = os.getenv("PROJECT435_ROOT")
@@ -115,20 +141,26 @@ def main():
             task_file.rename(approved / task_file.name)
 
         # 2) Dispatch approved -> running (create dispatch.*.json for Pluto runner)
-        for task_file in approved.glob("*.json"):
-            task = load_json(task_file)
-            tid = ensure_task_id(task, task_file.name)
+for task_file in approved.glob("*.json"):
+    task_text = task_file.read_text(encoding="utf-8")
+    task = json.loads(task_text)
+    tid = ensure_task_id(task, task_file.name)
 
-            dispatch_name = f"dispatch.{task_file.name}"
-            dispatch_path = tasks_root / dispatch_name
+    dispatch_name = f"dispatch.{task_file.name}"
+    dispatch_path = tasks_root / dispatch_name
 
-            # Write dispatch file at tasks root (where you already run Pluto from)
-            write_json(dispatch_path, task)
+    # Write dispatch exactly from original text (stable hash)
+    dispatch_path.write_text(task_text, encoding="utf-8")
 
-            print(f"📤 Dispatched for Pluto: {dispatch_path.name} (id={tid})")
+    # Write approval receipt (because user moved file into approved)
+    receipt_path = write_approval_receipt(root, task, task_text, method="manual_move")
 
-            # Move the approved task into running for Neptune tracking
-            task_file.rename(running / task_file.name)
+    print(f"🧾 Approval receipt: {receipt_path.name}")
+    print(f"📤 Dispatched for Pluto: {dispatch_path.name} (id={tid})")
+
+    # Move into running for tracking
+    task_file.rename(running / task_file.name)
+
 
         # 3) Watch running tasks via audit JSONL and finalize
         for task_file in running.glob("*.json"):

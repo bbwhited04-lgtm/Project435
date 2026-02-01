@@ -6,7 +6,14 @@ param(
 # Auto-detect repo root from this script location:
 # ...\apps\pluto\runner -> up 3 levels -> repo root of this worktree
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
-$AuditDir = "C:\Neptune\Logs"
+# Repo root auto-detect
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+
+# Read audit path from shared policy
+$PolicyPath = Join-Path $RepoRoot "core\policy\policy.default.json"
+$PolicyJson = Get-Content $PolicyPath -Raw | ConvertFrom-Json
+$AuditDir   = $PolicyJson.logging.audit_path
+
 
 $AuditWriter = Join-Path $RepoRoot "core\tools\powershell\Write-AuditEvent.ps1"
 $Installer   = Join-Path $RepoRoot "core\tools\powershell\Install-ApprovedApp.ps1"

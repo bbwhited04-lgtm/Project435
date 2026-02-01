@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 def read_audit(audit_dir: Path, task_id: str) -> list[dict]:
     path = audit_dir / f"audit_{task_id}.jsonl"
     if not path.exists():
@@ -10,6 +12,10 @@ def read_audit(audit_dir: Path, task_id: str) -> list[dict]:
         events.append(json.loads(line))
     return events
 def get_repo_root() -> Path:
+    env_root = os.getenv("PROJECT435_ROOT")
+    if env_root:
+        return Path(env_root)
+    # fallback: worktree relative
     return Path(__file__).resolve().parents[3]
 
 def load_policy(root: Path) -> dict:
